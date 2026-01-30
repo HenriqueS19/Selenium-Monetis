@@ -57,6 +57,7 @@ public class TransferOtherSteps {
     @When("I access accounts page for other account")
     public void i_access_accounts_page() {
         transferOtherPage.goToaccountsSection();
+        transferOtherPage.captureAfterBalance();
     }
 
     @Then("Verify {string} account balance decreased")

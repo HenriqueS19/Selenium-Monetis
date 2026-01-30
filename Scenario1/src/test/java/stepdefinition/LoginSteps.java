@@ -25,7 +25,6 @@ public class LoginSteps {
 
     @When("I click on the login button")
     public void i_click_on_the_login_button() {
-        //Performs the login button
         loginPage.clickLogin();
     }
 
@@ -33,9 +32,6 @@ public class LoginSteps {
     public void verify_user_is_on_dashboard() {
         // Initialize explicit wait for up to 10 seconds
         WebDriverWait wait = new WebDriverWait(Hooks.getDriver(), Duration.ofSeconds(10));
-
-        // Wait until the URL changes to contain the word 'dashboard'
-        // This allows time for the server to process the login request and redirect.
         boolean isDashboard = wait.until(ExpectedConditions.urlContains("dashboard"));
 
         // Final validation: confirms the redirection was successful

@@ -29,8 +29,9 @@ public class TransferOtherPage {
     private By btnDetails = By.xpath("//button[contains(text(),'See account details')]");
     private By btnHistory = By.xpath("//div[@class='action' and .//div[text()='History']]");
     private By transactionList = By.className("transaction-list");
-    private By checkingBalanceElement = By.xpath("//div[@class='account' and contains(., 'Checking')]//p[contains(text(),'€')]");
+    private By checkingBalanceElement = By.xpath("//div[@class='account' and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'checking')]//p[contains(text(),'€')]");
     private double previousBalance;
+    private double afterBalance;
 
     // Constructor
     public TransferOtherPage(WebDriver driver) {
@@ -93,6 +94,13 @@ public class TransferOtherPage {
         this.previousBalance = Double.parseDouble(numberPart);
     }
 
+    public void captureAfterBalance() {
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(checkingBalanceElement));
+        String balanceText = element.getText();
+        String numberPart = balanceText.replaceAll("[^0-9,]", "").replace(",", ".");
+        this.afterBalance = Double.parseDouble(numberPart);
+    }
+
 
     public void goToTransactionsSection() {
         WebElement historyButton = wait.until(ExpectedConditions.elementToBeClickable(btnHistory));
@@ -100,20 +108,8 @@ public class TransferOtherPage {
     }
 
     public void verifyAccountBalanceDecreased(String account) {
-        String lowerAccount = account.toLowerCase();
-        By accountBalanceElement = By.xpath(
-                "//div[@class='account' and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '" + lowerAccount + "')]//p[contains(text(),'€')]"
-        );
-
-        WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(30));
-        WebElement balanceElement = waitLong.until(ExpectedConditions.visibilityOfElementLocated(accountBalanceElement));
-        String balanceText = balanceElement.getText();
-
-        String normalized = balanceText.replaceAll("[^0-9,\\.]", "").replace(",", ".");
-        double currentBalance = Double.parseDouble(normalized);
-
-        Assert.assertTrue("Balance did not decrease as expected: previous=" + previousBalance + " current=" + currentBalance,
-                currentBalance < previousBalance);
+        Assert.assertTrue("Balance did not decrease as expected: previous=" + previousBalance + " after=" + afterBalance,
+                afterBalance < previousBalance);
     }
 
 

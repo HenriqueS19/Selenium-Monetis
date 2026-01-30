@@ -6,19 +6,45 @@ import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-
+import static io.restassured.RestAssured.given;
 import java.time.Duration;
 
 public class Hooks {
     private static WebDriver driver;
 
     @Before
+    public void registerTestUser() {
+        String requestBody = """
+                {  
+                    "name": "Testing",
+                    "surname": "Account",
+                    "email": "testingaccount@test.com",
+                    "phone_number": "123123123",
+                    "street_address": "Some Random street",
+                    "postal_code": "1231-123",
+                    "city": "Lisbon",
+                    "country": "PT",
+                    "password": "testingPassword!1",
+                    "confirmPassword": "testingPassword!1"
+                }
+                """;
+        given()
+            .contentType("application/json")
+            .body(requestBody)
+            .when()
+                .post("https://monetis-delta.vercel.app/api/users/register")
+                .then()
+                .statusCode(201);
+
+    }               
+    
+    @Before
     public void setup() {
         // Automatically downloads and manages the correct chromedriver version
         WebDriverManager.chromedriver().setup();
 
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--start-maximized"); // Opens browser in full screen
+        options.addArguments("--start-maximized"); // browser in full screen
         options.addArguments("--remote-allow-origins=*"); // Prevents some common connection errors
 
         driver = new ChromeDriver(options);

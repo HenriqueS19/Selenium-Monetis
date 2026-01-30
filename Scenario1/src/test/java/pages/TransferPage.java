@@ -15,7 +15,8 @@ public class TransferPage {
     WebDriverWait wait;
 
     // seletors
-    private By menuTransfer = By.xpath("//[contains(text(),'Transfer')]");
+    private By menuTransfer = By.xpath("//*[contains(text(),'Transfer')]");
+    private By menuAccounts = By.xpath("//*[contains(text(),'Accounts')]");
     private By optionOwnAccount = By.xpath("//*[contains(text(),'Own Account')]");
     private By selectAccount = By.xpath("(//input[contains(@id,'react-select') and contains(@id,'-input')])[2]");
     private By amountTransfer = By.name("amount");
@@ -37,17 +38,27 @@ public class TransferPage {
             Thread.sleep(2000);
 
             WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
-                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//span[contains(text(),'Transfer')]")));  // Ajuste o tag se necessário
+                    .until(ExpectedConditions.elementToBeClickable(menuTransfer));
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
+    public void goTOAccountsFromTransfer() {
+        // Wait for transfer page indicators
+        wait.until(ExpectedConditions.presenceOfElementLocated(amountTransfer));
+
+        WebElement element = wait.until(ExpectedConditions.elementToBeClickable(menuAccounts));
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+
+        // Wait for accounts page indicators
+        wait.until(ExpectedConditions.urlContains("/accounts"));
+    }
+
     public void selectOwnAccountOption() {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
         wait.until(ExpectedConditions.elementToBeClickable(optionOwnAccount)).click();
-        // Aguardar o formulário carregar
         wait.until(ExpectedConditions.presenceOfElementLocated(selectAccount));
     }
 

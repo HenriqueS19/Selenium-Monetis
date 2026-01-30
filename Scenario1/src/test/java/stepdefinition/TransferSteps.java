@@ -55,8 +55,8 @@ public class TransferSteps {
     }
 
     @When("I access accounts page")
-    public void i_access_accounts_page() {
-        accountsPage.goToaccountsSection();
+    public void i_access_accounts_page(){
+        transferPage.goTOAccountsFromTransfer();
     }
 
     @Then("verify {string} account balance increased")

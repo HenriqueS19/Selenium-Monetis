@@ -19,8 +19,6 @@ public class LoginPage {
     private By passwordField = By.cssSelector("input[type='password'], input[name='password'], #password");
     private By loginButton = By.cssSelector("button[type='submit']");
 
-
-
     // Constructor, receives the test driver to use on this page
     public LoginPage(WebDriver driver){
         this.driver = driver;
