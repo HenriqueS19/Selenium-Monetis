@@ -9,6 +9,9 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.TransferOtherPage;
 import pages.TransferPage;
 import java.time.Duration;
+import utils.ApiUtils;
+
+import static utils.ApiUtils.getIbanByEmail;
 
 public class TransferOtherSteps {
     WebDriver driver = Hooks.getDriver();
@@ -31,8 +34,15 @@ public class TransferOtherSteps {
         transferOtherPage.selectOtherAccountOption();
     }
 
-    @When("I fill in transfer form with {string} IBAN, {int} amount and proceed")
-    public void i_fill_in_transfer_form_with_iban_amount_and_proceed(String iban, int amount) {
+    @When("I fill in transfer form with {string} target, {int} amount and proceed")
+    public void i_fill_in_transfer_form_with_iban_amount_and_proceed(String target, int amount) {
+        String iban = target;
+        if (target.contains("@")){
+            if(target.equals("temp@email.com")) {
+                target = Hooks.getTestEmail();
+            }
+            iban = getIbanByEmail(target);
+        }
         transferOtherPage.enterIBAN(iban);
         transferOtherPage.enterAmount(String.valueOf(amount));
         transferOtherPage.clickNext();

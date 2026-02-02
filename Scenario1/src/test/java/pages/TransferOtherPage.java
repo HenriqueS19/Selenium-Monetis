@@ -17,8 +17,7 @@ public class TransferOtherPage {
     WebDriverWait wait;
 
     // selectors
-    private By menuTransfer = By.xpath("//[contains(text(),'Transfer')]");
-    private By transferBalanceElement = By.xpath("//div[@class='item balance']");
+    private By menuTransfer = By.xpath("//*[contains(text(),'Transfer')]");    private By transferBalanceElement = By.xpath("//div[@class='item balance']");
     private By accountsBalanceElement = By.xpath("//div[@class='account']//div[@class='backgroundGradient']//p[contains(text(),'€')]");
     private By optionOtherAccount = By.xpath("//*[contains(text(),'Other Account')]");
     private By inputIBAN = By.name("iban");
@@ -29,7 +28,8 @@ public class TransferOtherPage {
     private By btnDetails = By.xpath("//button[contains(text(),'See account details')]");
     private By btnHistory = By.xpath("//div[@class='action' and .//div[text()='History']]");
     private By transactionList = By.className("transaction-list");
-    private By checkingBalanceElement = By.xpath("//div[@class='account' and contains(translate(., 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'checking')]//p[contains(text(),'€')]");
+    private By checkingBalanceElement = By.xpath("//div[@class='account']//h2[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'checking')]/following-sibling::p[contains(.,'€')]");
+    By transactionAmount = By.xpath("//div[@class='transaction table']//div[@class='category' and contains(text(),'To PT50000201231234567890154')]/following::span[@class='amount']");
     private double previousBalance;
     private double afterBalance;
 
@@ -84,6 +84,7 @@ public class TransferOtherPage {
     public void goToaccountsSection() {
         WebElement seeMoreDetails = wait.until(ExpectedConditions.elementToBeClickable(btnDetails));
         seeMoreDetails.click();
+        wait.until(ExpectedConditions.presenceOfElementLocated(checkingBalanceElement));
     }
 
     public void capturePreviousBalance() {
@@ -114,10 +115,11 @@ public class TransferOtherPage {
 
 
     public void verifyNewTransactionMinusAmount(int amount) {
+        String formattedAmount = "-" + String.format("%.2f", (double) amount).replace(".", ",") + " €";
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(20));
-        waitLong.until(ExpectedConditions.visibilityOfElementLocated(transactionList));
-        List<WebElement> transactions = driver.findElements(By.xpath("//div[@class='transaction-list']//div[contains(text(),'-" + amount + "€')]"));
-        Assert.assertTrue("Transaction with -" + amount + "€ not found", !transactions.isEmpty());
+        WebElement amountElement = waitLong.until(ExpectedConditions.presenceOfElementLocated(transactionAmount));
+        String actualAmount = amountElement.getText();
+        Assert.assertEquals("Transaction amount does not match", formattedAmount, actualAmount);
     }
 
     public void verifySuccessPage() {
