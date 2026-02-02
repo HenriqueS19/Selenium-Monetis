@@ -2,6 +2,7 @@ package stepdefinition;
 
 import io.cucumber.java.en.*;
 import hooks.Hooks;
+import io.restassured.RestAssured;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -16,12 +17,26 @@ public class AccountsSteps {
     WebDriver driver = Hooks.getDriver();
     AccountsPage accountsPage = new AccountsPage(driver);
 
+    @Given("I add money to my account")
+    public void i_add_money_to_my_account() {
+        RestAssured.given()
+                .header("x-username", hooks.Hooks.getTestEmail())
+                .header("x-password", "thisIsMyPassword!1")
+                .contentType("application/json")
+                .body("{\"amount\": 1}")
+                .when()
+                .post("https://monetis-delta.vercel.app/api/users/api/addMoney")
+                .then()
+                .log().all()
+                .statusCode(200);
+    }
+
     @Given("login and access accounts page")
     public void login_and_access_accounts_page() {
         driver.get("https://monetis-delta.vercel.app/login");
 
-        driver.findElement(By.name("email")).sendKeys("john@email.com");
-        driver.findElement(By.name("password")).sendKeys("atec123-");
+        driver.findElement(By.name("email")).sendKeys(Hooks.getTestEmail());
+        driver.findElement(By.name("password")).sendKeys("thisIsMyPassword!1");
         driver.findElement(By.xpath("//button[@type='submit']")).click();
 
         accountsPage.goToaccountsSection();
@@ -49,6 +64,6 @@ public class AccountsSteps {
 
     @Then("Verify created account is present")
     public void verify_created_account_is_present() {
-        //
+        accountsPage.verifyAccountCreated("Ibiza");
     }
 }

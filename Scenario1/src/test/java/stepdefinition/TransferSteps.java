@@ -23,6 +23,15 @@ public class TransferSteps {
         driver.findElement(By.name("email")).sendKeys("john@email.com");
         driver.findElement(By.name("password")).sendKeys("atec123-");
         driver.findElement(By.xpath("//button[@type='submit']")).click();
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait.until(ExpectedConditions.urlContains("dashboard"));
+        transferPage.goToAccountsSectionFromDashboard();
+    }
+
+    @Given("I capture initial balance of {string} account")
+    public void i_capture_initial_balance_of_account(String account) {
+        transferPage.goToAccountsSectionFromTransfer();
+        transferPage.captureBalance(account);
         transferPage.goToTransferSection();
     }
 
@@ -50,17 +59,19 @@ public class TransferSteps {
 
     @Then("Verify success transfer page appears")
     public void verify_success_transfer_page_appears() {
-        transferPage.clickCloseButton();
+
+        transferPage.verifySuccessAndClose();
 
     }
 
     @When("I access accounts page")
     public void i_access_accounts_page(){
-        transferPage.goTOAccountsFromTransfer();
+        transferPage.goToAccountsSectionFromTransfer();
     }
 
     @Then("verify {string} account balance increased")
     public void verify_account_balance_increased(String account) {
-        accountsPage.verifyBalanceIncreased(account);
+        transferPage.captureFinalBalance(account);
+        transferPage.verifyBalanceIncreased(account);
     }
 }

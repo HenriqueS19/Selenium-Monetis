@@ -1,5 +1,6 @@
 package pages;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -22,7 +23,7 @@ public class AccountsPage {
     private By initialDeposit = By.name("amount");
     private By createButton = By.xpath("//button[text()='Create account']");
 
-    // Constructor, receives the test driver to use on this page
+
     public AccountsPage(WebDriver driver) {
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
@@ -42,6 +43,11 @@ public class AccountsPage {
 
     public void openCreateAccountPopup() {
         wait.until(ExpectedConditions.elementToBeClickable(addNewAccountCard)).click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void fillInformation(String namevalue, String initialDepositValue) {
@@ -52,6 +58,12 @@ public class AccountsPage {
         // deposit
         wait.until(ExpectedConditions.visibilityOfElementLocated(initialDeposit)).clear();
         driver.findElement(initialDeposit).sendKeys(initialDepositValue);
+
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void clickCreateAccount() {
@@ -60,7 +72,13 @@ public class AccountsPage {
     }
 
     public void verifyBalanceIncreased(String account) {
-
         System.out.println("A verificar se o saldo da conta " + account + " aumentou.");
+    }
+
+    public void verifyAccountCreated(String accountName) {
+        By accountElement = By.xpath("//*[contains(text(),'" + accountName + "')]");
+        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(accountElement));
+        Assert.assertTrue("Account '" + accountName + "' was not created.", element.isDisplayed());
+
     }
 }
