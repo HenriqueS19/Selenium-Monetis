@@ -49,10 +49,10 @@ public class TransferPage {
         }
         WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.elementToBeClickable(menuTransfer));
-        Assert.assertTrue("Transfer menu is not visible", element.isDisplayed());
+        Assert.assertTrue(element.isDisplayed());
         ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
         wait.until(ExpectedConditions.urlContains("transfer"));
-        Assert.assertTrue("Not on transfer page", driver.getCurrentUrl().contains("transfer"));
+        Assert.assertTrue(driver.getCurrentUrl().contains("transfer"));
     }
 
     public void goToAccountsSectionFromDashboard() {
@@ -76,7 +76,7 @@ public class TransferPage {
                 wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
             } catch (Exception ignored) {
             }
-            Assert.assertTrue("Not on accounts page", driver.getCurrentUrl().contains("accounts"));
+            Assert.assertTrue(driver.getCurrentUrl().contains("accounts"));
             return;
         }
 
@@ -98,11 +98,11 @@ public class TransferPage {
 
         WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.elementToBeClickable(menuAccounts));
-        Assert.assertTrue("Accounts menu is not clickable", element.isEnabled());
+        Assert.assertTrue(element.isEnabled());
         ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
 
         wait.until(ExpectedConditions.urlContains("accounts"));
-        Assert.assertTrue("Not on accounts page after navigation", driver.getCurrentUrl().contains("accounts"));
+        Assert.assertTrue(driver.getCurrentUrl().contains("accounts"));
     }
 
 
@@ -192,7 +192,6 @@ public class TransferPage {
     }
 
     public void verifyBalanceIncreased(String accountName) {
-        Assert.assertTrue("Balance account '" + accountName + "' dont increased.", finalBalance > previousBalance);
-
+        Assert.assertTrue("Balance did not increase: previous=" + previousBalance + " final=" + finalBalance, finalBalance > previousBalance);
     }
 }

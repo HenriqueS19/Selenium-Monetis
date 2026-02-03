@@ -32,32 +32,40 @@ public class AccountsPage {
     public void goToaccountsSection() {
         try {
             wait.until(ExpectedConditions.urlContains("dashboard"));
+            Assert.assertTrue("Not on dashboard", driver.getCurrentUrl().contains("dashboard"));
             Thread.sleep(2000);
 
             WebElement element = wait.until(ExpectedConditions.elementToBeClickable(menuAccounts));
+            Assert.assertTrue("Menu accounts not visible", element.isDisplayed());
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+            wait.until(ExpectedConditions.urlContains("accounts"));
+            Assert.assertTrue("Not on accounts page", driver.getCurrentUrl().contains("accounts"));
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
     }
 
     public void openCreateAccountPopup() {
-        wait.until(ExpectedConditions.elementToBeClickable(addNewAccountCard)).click();
+        WebElement popup = wait.until(ExpectedConditions.elementToBeClickable(addNewAccountCard));
+        Assert.assertTrue("Create account button not visible", popup.isDisplayed());
+        popup.click();
         try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+        wait.until(ExpectedConditions.visibilityOfElementLocated(accountName));
+        Assert.assertTrue("Popup did not open", driver.findElement(accountName).isDisplayed());
     }
 
     public void fillInformation(String namevalue, String initialDepositValue) {
-        // wait account name filled and visible
         wait.until(ExpectedConditions.visibilityOfElementLocated(accountName)).clear();
         driver.findElement(accountName).sendKeys(namevalue);
+        Assert.assertEquals("Account name not filled correctly", namevalue, driver.findElement(accountName).getAttribute("value"));
 
-        // deposit
         wait.until(ExpectedConditions.visibilityOfElementLocated(initialDeposit)).clear();
         driver.findElement(initialDeposit).sendKeys(initialDepositValue);
+        Assert.assertEquals("Initial deposit not filled correctly", initialDepositValue, driver.findElement(initialDeposit).getAttribute("value"));
 
         try {
             Thread.sleep(2000);
@@ -68,7 +76,13 @@ public class AccountsPage {
 
     public void clickCreateAccount() {
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(createButton));
+        Assert.assertTrue("Create button not enabled", button.isEnabled());
         button.click();
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
 
     public void verifyBalanceIncreased(String account) {

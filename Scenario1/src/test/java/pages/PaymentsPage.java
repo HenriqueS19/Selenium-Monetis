@@ -35,12 +35,13 @@ public class PaymentsPage {
     }
 
     public void goToPaymentsSection() {
-
             wait.until(ExpectedConditions.urlContains("dashboard"));
             WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                     .until(ExpectedConditions.elementToBeClickable(menuPayments));
+            Assert.assertTrue("Payments menu is not visible", element.isDisplayed());
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
             wait.until(ExpectedConditions.urlContains("payments"));
+            Assert.assertTrue("Not on payments page", driver.getCurrentUrl().contains("payments"));
          try {
             Thread.sleep(2000);
         } catch (InterruptedException e) {
@@ -58,11 +59,13 @@ public class PaymentsPage {
     public void setFillEntity(String entity) {
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fillEntity));
         input.sendKeys(entity);
+        Assert.assertEquals("Entity field value does not match", entity, input.getAttribute("value"));
     }
 
     public void fillReference(String reference) {
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fillReference));
         input.sendKeys(reference);
+        Assert.assertEquals("Reference field value does not match", reference, input.getAttribute("value"));
     }
 
     public void fillCategory(String category) {
@@ -74,10 +77,12 @@ public class PaymentsPage {
     public void setFillAmount(String amount) {
         WebElement input = wait.until(ExpectedConditions.elementToBeClickable(fillAmount));
         input.sendKeys(amount);
+        Assert.assertEquals("Amount field value does not match", amount, input.getAttribute("value"));
     }
 
     public void verifyConfirmationWindow() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(btnOtherNext));
+        WebElement confirmButton = wait.until(ExpectedConditions.visibilityOfElementLocated(btnOtherNext));
+        Assert.assertTrue("Confirmation window not displayed", confirmButton.isDisplayed());
     }
 
     public void clickNext() {
@@ -110,13 +115,15 @@ public class PaymentsPage {
     }
 
     public void verifySuccessPage() {
-        wait.until(ExpectedConditions.elementToBeClickable(btnClose));
+        WebElement closeButton = wait.until(ExpectedConditions.elementToBeClickable(btnClose));
+        Assert.assertTrue("Success page not displayed", closeButton.isDisplayed());
     }
 
     public void goToTransactionsSection() {
         try {
             WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                     .until(ExpectedConditions.elementToBeClickable(menuTransactions));
+            Assert.assertTrue("Transactions menu not visible", element.isDisplayed());
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
             wait.until(ExpectedConditions.presenceOfElementLocated(transactionList));
         } catch (Exception e) {
@@ -129,10 +136,10 @@ public class PaymentsPage {
     }
 
     public void verifyNewTransaction(String category, String amount) {
-        String formattedAmount = String.format("%.2f", Double.parseDouble(amount)).replace(".", ",") + " €";
+        String formattedAmount = String.format("%.2f", Double.parseDouble(amount)).replace(".", ",") + " ";
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(20));
         WebElement amountElement = waitLong.until(ExpectedConditions.visibilityOfElementLocated(getTransactionAmountLocator(category)));
         String actualAmount = amountElement.getText();
-        Assert.assertEquals("-" + formattedAmount, actualAmount);
+        Assert.assertEquals("Transaction amount does not match expected", "-" + formattedAmount, actualAmount);
     }
 }
