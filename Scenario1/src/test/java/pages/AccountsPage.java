@@ -86,7 +86,7 @@ public class AccountsPage {
     }
 
     public void verifyBalanceIncreased(String account) {
-        System.out.println("A verificar se o saldo da conta " + account + " aumentou.");
+        System.out.println("Verifying if balance increased for account: " + account);
     }
 
     public void verifyAccountCreated(String accountName) {
