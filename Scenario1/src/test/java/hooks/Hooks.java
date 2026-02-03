@@ -44,7 +44,7 @@ public class Hooks {
     @After
     public void tearDown() {
         try {
-            Thread.sleep(3000);
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

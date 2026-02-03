@@ -136,10 +136,11 @@ public class PaymentsPage {
     }
 
     public void verifyNewTransaction(String category, String amount) {
-        String formattedAmount = String.format("%.2f", Double.parseDouble(amount)).replace(".", ",") + " ";
+        String formattedAmount = String.format("%.2f", Double.parseDouble(amount)).replace(".", ",") + " €";
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(20));
         WebElement amountElement = waitLong.until(ExpectedConditions.visibilityOfElementLocated(getTransactionAmountLocator(category)));
-        String actualAmount = amountElement.getText();
-        Assert.assertEquals("Transaction amount does not match expected", "-" + formattedAmount, actualAmount);
+        String actualAmount = amountElement.getText().replaceAll("\\s+", " ").trim().toLowerCase();
+        String expectedAmount = ("-" + formattedAmount).toLowerCase();
+        Assert.assertEquals("Transaction amount does not match expected", expectedAmount, actualAmount);
     }
 }

@@ -123,7 +123,7 @@ public class TransferOtherPage {
 
 
     public void verifyNewTransactionMinusAmount(int amount) {
-        String formattedAmount = "-" + String.format("%.2f", (double) amount).replace(".", ",") + " ";
+        String formattedAmount = "-" + String.format("%.2f", (double) amount).replace(".", ",") + " €";
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(20));
         WebElement amountElement = waitLong.until(ExpectedConditions.presenceOfElementLocated(transactionAmount));
         String actualAmount = amountElement.getText();
