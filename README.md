@@ -1,6 +1,6 @@
 # Testes Automatizados Monetis
 
-Projeto de testes para a aplicação Monetis usando Selenium e Cucumber.
+Projeto de testes para a aplicação Monetis
 
 ## Tecnologias
 
