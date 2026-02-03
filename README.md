@@ -15,7 +15,7 @@ Projeto de testes para a aplicação Monetis usando Selenium e Cucumber.
 ```bash
 mvn clean test
 ```
-Ou abre os ficheiros .feature em `src/test/resources/features/` e corre no IDE (botão direito → Run).
+Ou abrir os ficheiros .feature em `src/test/resources/features/` e correr no IDE (botão direito → Run).
 
 ## Testes implementados
 
