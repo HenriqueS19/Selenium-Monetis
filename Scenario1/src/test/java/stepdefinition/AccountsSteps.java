@@ -42,7 +42,6 @@ public class AccountsSteps {
 
     @Then("Verify popup to create the account appears")
     public void verify_popup_to_create_the_account_appears() {
-        //
     }
 
     @When("I fill information for the new account")
