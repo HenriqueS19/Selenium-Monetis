@@ -26,6 +26,8 @@ public class PaymentsPage {
     private By btnNext = By.xpath("//button[text()='Next']");
     private By btnOtherNext = By.xpath("//button[@type='submit' and text()='Next']");
     private By btnClose = By.xpath("//button[@type='submit' and text()='Close']");
+    private By transactionList = By.className("transaction-list");
+
 
     public PaymentsPage(WebDriver driver) {
         this.driver = driver;
@@ -112,22 +114,24 @@ public class PaymentsPage {
     }
 
     public void goToTransactionsSection() {
-        By menuTransactions = By.xpath("//span[contains(text(),'Transactions')]");
         try {
             WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                     .until(ExpectedConditions.elementToBeClickable(menuTransactions));
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-            wait.until(ExpectedConditions.presenceOfElementLocated(By.className(("transaction-list"))));
+            wait.until(ExpectedConditions.presenceOfElementLocated(transactionList));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private By getTransactionAmountLocator(String category) {
+        return By.xpath("//div[@class='transaction table']//div[@class='category' and translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + category.toLowerCase() + "']/following::span[@class='amount']");
+    }
+
     public void verifyNewTransaction(String category, String amount) {
-        By transactionAmount = By.xpath("//div[@class='transaction table']//div[@class='category' and translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz')='" + category.toLowerCase() + "']/following::span[@class='amount']");
         String formattedAmount = String.format("%.2f", Double.parseDouble(amount)).replace(".", ",") + " €";
         WebDriverWait waitLong = new WebDriverWait(driver, Duration.ofSeconds(20));
-        WebElement amountElement = waitLong.until(ExpectedConditions.visibilityOfElementLocated(transactionAmount));
+        WebElement amountElement = waitLong.until(ExpectedConditions.visibilityOfElementLocated(getTransactionAmountLocator(category)));
         String actualAmount = amountElement.getText();
         Assert.assertEquals("-" + formattedAmount, actualAmount);
     }

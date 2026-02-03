@@ -45,7 +45,7 @@ public class TransferOtherPage {
             Thread.sleep(2000);
 
             WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
-                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//span[contains(text(),'Transfer')]")));  // Ajuste o tag se necessário
+                    .until(ExpectedConditions.elementToBeClickable(By.xpath("//span[contains(text(),'Transfer')]")));
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
