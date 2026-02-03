@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.AccountsPage;
 import pages.LoginPage;
 import org.junit.Assert;
+import utils.ApiUtils;
+
 import java.time.Duration;
 
 public class AccountsSteps {
@@ -19,16 +21,7 @@ public class AccountsSteps {
 
     @Given("I add money to my account")
     public void i_add_money_to_my_account() {
-        RestAssured.given()
-                .header("x-username", hooks.Hooks.getTestEmail())
-                .header("x-password", "thisIsMyPassword!1")
-                .contentType("application/json")
-                .body("{\"amount\": 1}")
-                .when()
-                .post("https://monetis-delta.vercel.app/api/users/api/addMoney")
-                .then()
-                .log().all()
-                .statusCode(200);
+        ApiUtils.addMoney(300);
     }
 
     @Given("login and access accounts page")

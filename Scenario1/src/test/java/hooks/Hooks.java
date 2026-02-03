@@ -11,6 +11,8 @@ import org.hamcrest.Matchers;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import utils.ApiUtils;
+
 import java.time.Duration;
 
 public class Hooks {
@@ -25,30 +27,8 @@ public class Hooks {
     @Before(order = 1)
     public void registerTestUs() {
         testEmail = "testingaccount" + java.util.UUID.randomUUID() + "@test.com";
-        String requestBody = """
-                {
-                    "name": "Testing",
-                    "surname": "Account",
-                    "email": "%s",
-                    "phone_number": "123123123",
-                    "street_address": "Some Random street",
-                    "postal_code": "1231-123",
-                    "city": "Lisbon",
-                    "country": "PT",
-                    "password": "thisIsMyPassword!1",
-                    "confirmPassword": "thisIsMyPassword!1"
-                }
-                """.formatted(testEmail);
-        RestAssured.given()
-            .contentType("application/json")
-            .body(requestBody)
-            .when()
-                .post("https://monetis-delta.vercel.app/api/users/register")
-                .then()
-                .log().all()
-                .statusCode(200);
-
-    }               
+        ApiUtils.registerTestUser(testEmail);
+    }
     
     @Before(order =2)
     public void setup() {
@@ -68,13 +48,11 @@ public class Hooks {
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
-
         if (driver != null) {
             driver.quit();
         }
     }
 
-    // this method allows LoginSteps to borrow the driver created here
     public static WebDriver getDriver() {
         return driver;
     }

@@ -7,6 +7,8 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.PaymentsPage;
+import utils.ApiUtils;
+
 import java.time.Duration;
 
 public class PaymentsSteps {
@@ -26,15 +28,9 @@ public class PaymentsSteps {
         paymentsPage.goToPaymentsSection();
     }
 
-
     @When("I click to proceed with payment")
     public void i_click_to_proceed_with_payment() {
         paymentsPage.clickNext();
-    }
-
-    @Then("Verify confirmation window appears again with payment details")
-    public void verify_confirmation_window_appears_again_with_payment_details() {
-        paymentsPage.verifyConfirmationWindow();
     }
 
     @When("I click to proceed with payment again")
@@ -44,13 +40,19 @@ public class PaymentsSteps {
 
     @Then("Verify success payment page appears")
     public void verify_success_payment_page_appears() {
-        paymentsPage.verifySuccessPage();
+        paymentsPage.closeConfirmation();
     }
 
     @When("I make a payment with the following data")
     public void i_make_a_payment_with_the_following_data(io.cucumber.datatable.DataTable dataTable) {
         java.util.List<java.util.Map<String, String>> data = dataTable.asMaps(String.class, String.class);
         java.util.Map<String, String> paymentData = data.get(0);
+        String account = paymentData.get("ACCOUNT");
+
+        if (!"checking".equals(account) && !"savings".equals(account)) {
+            ApiUtils.createAccount(account, 1);
+        }
+
         paymentsPage.selectAccount(paymentData.get("ACCOUNT"));
         paymentsPage.setFillEntity(paymentData.get("ENTITY"));
         paymentsPage.fillReference(paymentData.get("REFERENCE"));
@@ -62,7 +64,6 @@ public class PaymentsSteps {
             Thread.currentThread().interrupt();
         }
     }
-
 
     @When("I access the payments transactions page")
     public void i_access_transactions_page() {

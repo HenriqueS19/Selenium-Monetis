@@ -3,7 +3,6 @@ Feature: Make multiple payments
     Given login and access payments page
     When I make a payment with the following data
       | ACCOUNT | REFERENCE | ENTITY | AMOUNT | CATEGORY |
-
       | <ACCOUNT> | <REFERENCE> | <ENTITY> | <AMOUNT> | <CATEGORY> |
     When I click to proceed with payment
     When I click to proceed with payment again
