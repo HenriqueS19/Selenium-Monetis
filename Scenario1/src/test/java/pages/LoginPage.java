@@ -1,5 +1,6 @@
 package pages;
 
+import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -25,15 +26,15 @@ public class LoginPage {
     }
 
     public void fillCredentials(String email, String password) {
-        // Wait for email field, clear it, and type
         WebElement emailInput = wait.until(ExpectedConditions.visibilityOfElementLocated(emailField));
         emailInput.clear();
         emailInput.sendKeys(email);
+        Assert.assertEquals("Email field value does not match", email, emailInput.getAttribute("value"));
 
-        // Wait for password field, clear it, and type
         WebElement passInput = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
         passInput.clear();
         passInput.sendKeys(password);
+        Assert.assertEquals("Password field value does not match", password, passInput.getAttribute("value"));
     }
 
     public void accessPage(String url) {
@@ -41,6 +42,7 @@ public class LoginPage {
     }
     public void clickLogin() {
         WebElement button = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
+        Assert.assertTrue("Login button is not enabled", button.isEnabled());
         button.click();
 
     }

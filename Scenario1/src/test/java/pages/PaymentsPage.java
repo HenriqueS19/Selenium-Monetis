@@ -35,14 +35,14 @@ public class PaymentsPage {
     }
 
     public void goToPaymentsSection() {
-        try {
-            wait.until(ExpectedConditions.urlContains("dashboard"));
-            Thread.sleep(2000);
 
+            wait.until(ExpectedConditions.urlContains("dashboard"));
             WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                     .until(ExpectedConditions.elementToBeClickable(menuPayments));
             ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
             wait.until(ExpectedConditions.urlContains("payments"));
+         try {
+            Thread.sleep(2000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }

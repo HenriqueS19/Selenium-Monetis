@@ -46,46 +46,72 @@ public class TransferPage {
         String currentUrl = driver.getCurrentUrl();
         if (!currentUrl.contains("dashboard") && !currentUrl.contains("accounts")) {
             driver.get("https://monetis-delta.vercel.app/dashboard");
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
         }
         WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.elementToBeClickable(menuTransfer));
+        Assert.assertTrue("Transfer menu is not visible", element.isDisplayed());
         ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        wait.until(ExpectedConditions.urlContains("transfer"));
+        Assert.assertTrue("Not on transfer page", driver.getCurrentUrl().contains("transfer"));
     }
 
     public void goToAccountsSectionFromDashboard() {
         String currentUrl = driver.getCurrentUrl();
         if (!currentUrl.contains("dashboard") && !currentUrl.contains("accounts")) {
             driver.get("https://monetis-delta.vercel.app/dashboard");
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
         }
         WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
                 .until(ExpectedConditions.elementToBeClickable(menuAccounts));
+        Assert.assertTrue("Accounts menu is not visible", element.isDisplayed());
         ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        wait.until(ExpectedConditions.urlContains("accounts"));
+        Assert.assertTrue("Not on accounts page", driver.getCurrentUrl().contains("accounts"));
     }
 
     public void goToAccountsSectionFromTransfer() {
+        String currentUrl = driver.getCurrentUrl();
+
+        if (currentUrl.contains("accounts")) {
+            try {
+                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
+            } catch (Exception ignored) {
+            }
+            Assert.assertTrue("Not on accounts page", driver.getCurrentUrl().contains("accounts"));
+            return;
+        }
+
+        if (!currentUrl.contains("dashboard")) {
+            driver.get("https://monetis-delta.vercel.app/dashboard");
+            wait.until(ExpectedConditions.urlContains("dashboard"));
+        }
+
         try {
-            Thread.sleep(2000);
-            WebElement element = wait.until(ExpectedConditions.elementToBeClickable(menuAccounts));
-            ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-            Thread.sleep(2000);
+            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
+        } catch (Exception ignored) {
+        }
+
+        try {
+            Thread.sleep(1000);
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
         }
+
+        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
+                .until(ExpectedConditions.elementToBeClickable(menuAccounts));
+        Assert.assertTrue("Accounts menu is not clickable", element.isEnabled());
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+
+        wait.until(ExpectedConditions.urlContains("accounts"));
+        Assert.assertTrue("Not on accounts page after navigation", driver.getCurrentUrl().contains("accounts"));
     }
+
+
 
     public void selectOwnAccountOption() {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
-        wait.until(ExpectedConditions.elementToBeClickable(optionOwnAccount)).click();
+        WebElement option = wait.until(ExpectedConditions.elementToBeClickable(optionOwnAccount));
+        Assert.assertTrue("Own account option is not displayed", option.isDisplayed());
+        option.click();
         wait.until(ExpectedConditions.presenceOfElementLocated(selectAccount));
     }
 
