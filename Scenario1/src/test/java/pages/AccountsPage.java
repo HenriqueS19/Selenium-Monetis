@@ -77,6 +77,7 @@ public class AccountsPage {
     }
 
     private void clickElement(WebElement element) {
-        element.click();
+
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
     }
 }
