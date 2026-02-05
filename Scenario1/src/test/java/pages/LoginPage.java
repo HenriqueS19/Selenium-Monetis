@@ -4,15 +4,12 @@ import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
+import utils.WaitUtils;
 
 public class LoginPage {
 
-    WebDriver driver;
-    WebDriverWait wait;
+    private WebDriver driver;
+    private WaitUtils waitUtils;
 
     // Selectors, lets map the page elements
 
@@ -22,16 +19,16 @@ public class LoginPage {
 
     public LoginPage(WebDriver driver){
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.waitUtils = new WaitUtils(driver);
     }
 
     public void fillCredentials(String email, String password) {
-        WebElement emailInput = wait.until(ExpectedConditions.visibilityOfElementLocated(emailField));
+        WebElement emailInput = waitUtils.waitForElementToBeVisible(emailField);
         emailInput.clear();
         emailInput.sendKeys(email);
         Assert.assertEquals("Email field value does not match", email, emailInput.getAttribute("value"));
 
-        WebElement passInput = wait.until(ExpectedConditions.visibilityOfElementLocated(passwordField));
+        WebElement passInput = waitUtils.waitForElementToBeVisible(passwordField);
         passInput.clear();
         passInput.sendKeys(password);
         Assert.assertEquals("Password field value does not match", password, passInput.getAttribute("value"));
@@ -40,11 +37,21 @@ public class LoginPage {
     public void accessPage(String url) {
         driver.get(url);
     }
+
     public void clickLogin() {
-        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
+        WebElement button = waitUtils.waitForElementToBeClickable(loginButton);
         Assert.assertTrue("Login button is not enabled", button.isEnabled());
         button.click();
+    }
 
+    public void login(String email, String password) {
+        fillCredentials(email, password);
+        clickLogin();
+        waitUtils.waitForUrlContains("dashboard");
+    }
+
+    public boolean isOnDashboard() {
+        return waitUtils.waitForUrlContains("dashboard");
     }
 
 }

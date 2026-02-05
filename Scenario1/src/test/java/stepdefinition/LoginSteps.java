@@ -2,11 +2,8 @@ package stepdefinition;
 
 import io.cucumber.java.en.*;
 import hooks.Hooks;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.LoginPage;
 import org.junit.Assert;
-import java.time.Duration;
 
 public class LoginSteps {
     // we initialize the LoginPage by passing the driver created in the Hooks class
@@ -30,16 +27,7 @@ public class LoginSteps {
 
     @Then("Verify user is on dashboard")
     public void verify_user_is_on_dashboard() {
-        WebDriverWait wait = new WebDriverWait(Hooks.getDriver(), Duration.ofSeconds(10));
-        boolean isDashboard = wait.until(ExpectedConditions.urlContains("dashboard"));
-
+        boolean isDashboard = loginPage.isOnDashboard();
         Assert.assertTrue("The User is not on the dashboard page! Current URL: " + Hooks.getDriver().getCurrentUrl(), isDashboard);
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-
     }
 }

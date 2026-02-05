@@ -2,29 +2,27 @@ package stepdefinition;
 
 import io.cucumber.java.en.*;
 import hooks.Hooks;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.TransferOtherPage;
-import pages.TransferPage;
-import java.time.Duration;
+import pages.LoginPage;
+import config.TestConfig;
 import utils.ApiUtils;
 
 import static utils.ApiUtils.getIbanByEmail;
 
 public class TransferOtherSteps {
-    WebDriver driver = Hooks.getDriver();
-    TransferOtherPage transferOtherPage = new TransferOtherPage(driver);
+
+    private LoginPage loginPage;
+    private TransferOtherPage transferOtherPage;
+
+    public TransferOtherSteps() {
+        this.loginPage = new LoginPage(Hooks.getDriver());
+        this.transferOtherPage = new TransferOtherPage(Hooks.getDriver());
+    }
 
     @Given ("login and access transfer page for other account")
     public void login_and_access_transfer_page() {
-        driver.get("https://monetis-delta.vercel.app/login");
-        driver.findElement(By.name("email")).sendKeys("john@email.com");
-        driver.findElement(By.name("password")).sendKeys("atec123-");
-        driver.findElement(By.xpath("//button[@type='submit']")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.urlContains("dashboard"));
+        loginPage.accessPage(TestConfig.LOGIN_URL);
+        loginPage.login(TestConfig.TEST_USER_EMAIL, TestConfig.TEST_USER_PASSWORD);
         transferOtherPage.goToTransferSection();
         transferOtherPage.capturePreviousBalance();
     }

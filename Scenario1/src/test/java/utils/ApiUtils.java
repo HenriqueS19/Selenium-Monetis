@@ -1,19 +1,20 @@
 package utils;
 
+import config.TestConfig;
 import hooks.Hooks;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
+import org.junit.Test;
+
 
 public class ApiUtils {
     public static String getIbanByEmail(String email) {
-        String username = "john@email.com";
-        String password = "atec123-";
         Response response = RestAssured.given()
                 .auth()
-                .basic(username, password)
+                .basic(TestConfig.TEST_USER_EMAIL, TestConfig.TEST_USER_PASSWORD)
                 .queryParam("email", email)
                 .when()
-                .get("https://monetis-delta.vercel.app/api/users/api/getIbanByEmail")
+                .get(TestConfig.API_GET_IBAN)
                 .then()
                 .statusCode(200)
                 .extract().response();
@@ -21,15 +22,13 @@ public class ApiUtils {
     }
 
     public static void createAccount(String account, int amount) {
-        String username = "john@email.com";
-        String password = "atec123-";
         RestAssured.given()
-                .header("x-username", username)
-                .header("x-password", password)
+                .header("x-username", TestConfig.TEST_USER_EMAIL)
+                .header("x-password", TestConfig.TEST_USER_PASSWORD)
                 .contentType("application/json")
                 .body("{\"account\":\"" + account + "\", \"amount\":" + amount +"}")
                 .when()
-                .post("https://monetis-delta.vercel.app/api/accounts/api/createAccount")
+                .post(TestConfig.API_CREATE_ACCOUNT)
                 .then()
                 .statusCode(200);
     }
@@ -45,15 +44,15 @@ public class ApiUtils {
                     "postal_code": "1231-123",
                     "city": "Lisbon",
                     "country": "PT",
-                    "password": "thisIsMyPassword!1",
-                    "confirmPassword": "thisIsMyPassword!1"
+                    "password": "%s",
+                    "confirmPassword": "%s"
                 }
-                """.formatted(email);
+                """.formatted(email,TestConfig.NEW_USER_PASSWORD, TestConfig.NEW_USER_PASSWORD);
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestBody)
                 .when()
-                .post("https://monetis-delta.vercel.app/api/users/register")
+                .post(TestConfig.API_REGISTER_USER)
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -62,11 +61,11 @@ public class ApiUtils {
     public static void addMoney(int amount) {
         RestAssured.given()
                 .header("x-username", Hooks.getTestEmail())
-                .header("x-password", "thisIsMyPassword!1")
+                .header("x-password", TestConfig.NEW_USER_PASSWORD)
                 .contentType("application/json")
                 .body("{\"amount\":" + amount + "}")
                 .when()
-                .post("https://monetis-delta.vercel.app/api/users/api/addMoney")
+                .post(TestConfig.API_ADD_MONEY)
                 .then()
                 .log().all()
                 .statusCode(200);

@@ -1,19 +1,16 @@
 package pages;
 
-import io.cucumber.java.en.When;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import java.time.Duration;
+import utils.WaitUtils;
+import config.TestConfig;
 
 public class TransferPage {
 
-    WebDriver driver;
-    WebDriverWait wait;
+    private WebDriver driver;
+    private WaitUtils waitUtils;
 
 
     private By menuTransfer = By.xpath("//*[contains(text(),'Transfer')]");
@@ -24,10 +21,11 @@ public class TransferPage {
     private By btnNext = By.xpath("//button[text()='Next']");
     private By btnNextConfirm = By.xpath("//button[@type='submit' and text()='Next']");
     private By btnClose = By.xpath("//button[@type='submit' and text()='Close']");
-    private By confirmationWindow = By.xpath("//div[contains(@class,'confirmation')]");
-    private By successPage = By.xpath("//div[contains(text(),'Transfer successful')]");
+    private By loadingScreen = By.className("loading_screen");
+
     private double previousBalance;
     private double finalBalance;
+
     private By initialBalance(String accountName) {
         return By.xpath("//div[@class='account']//h2[contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + accountName.toLowerCase() + "')]/following-sibling::p[contains(.,'€')]");
     }
@@ -39,32 +37,30 @@ public class TransferPage {
 
     public TransferPage(WebDriver driver) {
         this.driver = driver;
-        this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.waitUtils = new WaitUtils(driver);
     }
 
     public void goToTransferSection() {
         String currentUrl = driver.getCurrentUrl();
         if (!currentUrl.contains("dashboard") && !currentUrl.contains("accounts")) {
-            driver.get("https://monetis-delta.vercel.app/dashboard");
+            driver.get(TestConfig.DASHBOARD_URL);
         }
-        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.elementToBeClickable(menuTransfer));
+        WebElement element = waitUtils.waitForElementToBeClickableLong(menuTransfer);
         Assert.assertTrue(element.isDisplayed());
-        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-        wait.until(ExpectedConditions.urlContains("transfer"));
+        clickElement(element);
+        waitUtils.waitForUrlContains("transfer");
         Assert.assertTrue(driver.getCurrentUrl().contains("transfer"));
     }
 
     public void goToAccountsSectionFromDashboard() {
         String currentUrl = driver.getCurrentUrl();
         if (!currentUrl.contains("dashboard") && !currentUrl.contains("accounts")) {
-            driver.get("https://monetis-delta.vercel.app/dashboard");
+            driver.get(TestConfig.DASHBOARD_URL);
         }
-        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.elementToBeClickable(menuAccounts));
+        WebElement element = waitUtils.waitForElementToBeClickableLong(menuAccounts);
         Assert.assertTrue("Accounts menu is not visible", element.isDisplayed());
-        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-        wait.until(ExpectedConditions.urlContains("accounts"));
+        clickElement(element);
+        waitUtils.waitForUrlContains("accounts");
         Assert.assertTrue("Not on accounts page", driver.getCurrentUrl().contains("accounts"));
     }
 
@@ -72,126 +68,91 @@ public class TransferPage {
         String currentUrl = driver.getCurrentUrl();
 
         if (currentUrl.contains("accounts")) {
-            try {
-                wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
-            } catch (Exception ignored) {
-            }
-            Assert.assertTrue(driver.getCurrentUrl().contains("accounts"));
+            waitUtils.waitForElementToBeInvisible(loadingScreen);
             return;
         }
 
         if (!currentUrl.contains("dashboard")) {
-            driver.get("https://monetis-delta.vercel.app/dashboard");
-            wait.until(ExpectedConditions.urlContains("dashboard"));
+            driver.get(TestConfig.DASHBOARD_URL);
+            waitUtils.waitForUrlContains("dashboard");
         }
 
-        try {
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
-        } catch (Exception ignored) {
-        }
+        waitUtils.waitForElementToBeInvisible(loadingScreen);
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
-
-        WebElement element = new WebDriverWait(driver, Duration.ofSeconds(20))
-                .until(ExpectedConditions.elementToBeClickable(menuAccounts));
+        WebElement element = waitUtils.waitForElementToBeClickableLong(menuAccounts);
         Assert.assertTrue(element.isEnabled());
-        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
-
-        wait.until(ExpectedConditions.urlContains("accounts"));
+        clickElement(element);
+        waitUtils.waitForUrlContains("accounts");
         Assert.assertTrue(driver.getCurrentUrl().contains("accounts"));
     }
 
-
-
     public void selectOwnAccountOption() {
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("loading_screen")));
-        WebElement option = wait.until(ExpectedConditions.elementToBeClickable(optionOwnAccount));
+        waitUtils.waitForElementToDisappear(loadingScreen);
+        WebElement option = waitUtils.waitForElementToBeClickable(optionOwnAccount);
         Assert.assertTrue("Own account option is not displayed", option.isDisplayed());
         option.click();
-        wait.until(ExpectedConditions.presenceOfElementLocated(selectAccount));
+        waitUtils.waitForElementPresence(selectAccount);
     }
 
     public void selectSavingsAccount(String accountName) {
-        wait.until(ExpectedConditions.presenceOfElementLocated(selectAccount));
-        WebElement selectElem = wait.until(ExpectedConditions.elementToBeClickable(selectAccount));
+        waitUtils.waitForElementPresence(selectAccount);
+        WebElement selectElem = waitUtils.waitForElementToBeClickable(selectAccount);
         selectElem.click();
 
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@role='listbox']")));
+        waitUtils.waitForElementToBeVisible(By.xpath("//div[@role='listbox']"));
 
         String xpathOption = "//div[@role='option' and contains(translate(text(),'ABCDEFGHIJKLMNOPQRSTUVWXYZ','abcdefghijklmnopqrstuvwxyz'),'" + accountName.toLowerCase() + "')]";
-        WebElement option = wait.until(ExpectedConditions.elementToBeClickable(By.xpath(xpathOption)));
+        WebElement option = waitUtils.waitForElementToBeClickable(By.xpath(xpathOption));
         option.click();
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 
 
     public void fillTransferAmount(String amount) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(amountTransfer)).clear();
-        driver.findElement(amountTransfer).sendKeys(amount);
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
+        WebElement amoutField = waitUtils.waitForElementToBeVisible(amountTransfer);
+        amoutField.clear();
+        amoutField.sendKeys(amount);
     }
 
     public void clickNextButton() {
-        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(btnNext));
+        WebElement button = waitUtils.waitForElementToBeClickable(btnNext);
         button.click();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
+
     public void clickNextConfirmButton() {
-        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(btnNextConfirm));
+        WebElement button = waitUtils.waitForElementToBeClickable(btnNextConfirm);
         button.click();
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
     public void clickCloseButton() {
-        WebElement button = wait.until(ExpectedConditions.elementToBeClickable(btnClose));
+        WebElement button = waitUtils.waitForElementToBeClickable(btnClose);
         button.click();
     }
 
     public void verifyConfirmationWindow() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(btnNextConfirm));
+        waitUtils.waitForElementToBeVisible(btnNextConfirm);
     }
 
     public void captureBalance(String accountName) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(initialBalance(accountName)));
+        waitUtils.waitForElementToBeInvisible(loadingScreen);
+        WebElement element = waitUtils.waitForElementToBeVisible(lastBalance(accountName));
         String balanceText = element.getText().replaceAll("[^0-9.,]", "").replace(".", "").replace(",", ".");
         previousBalance = Double.parseDouble(balanceText);
     }
 
     public void captureFinalBalance(String accountName) {
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(lastBalance(accountName)));
+        WebElement element = waitUtils.waitForElementToBeVisible(lastBalance(accountName));
         String balanceText = element.getText().replaceAll("[^0-9.,]", "").replace(".", "").replace(",", ".");
         finalBalance = Double.parseDouble(balanceText);
     }
 
     public void verifySuccessAndClose() {
         clickCloseButton();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     public void verifyBalanceIncreased(String accountName) {
         Assert.assertTrue("Balance did not increase: previous=" + previousBalance + " final=" + finalBalance, finalBalance > previousBalance);
+    }
+
+    private void clickElement(WebElement element) {
+        ((org.openqa.selenium.JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
     }
 }

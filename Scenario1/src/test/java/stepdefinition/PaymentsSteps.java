@@ -2,28 +2,25 @@ package stepdefinition;
 
 import io.cucumber.java.en.*;
 import hooks.Hooks;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import pages.PaymentsPage;
+import pages.LoginPage;
 import utils.ApiUtils;
-
-import java.time.Duration;
+import config.TestConfig;
 
 public class PaymentsSteps {
-    WebDriver driver = Hooks.getDriver();
-    PaymentsPage paymentsPage = new PaymentsPage(driver);
+    private LoginPage loginPage;
+    private PaymentsPage paymentsPage;
+
+    public PaymentsSteps() {
+        this.loginPage = new LoginPage(Hooks.getDriver());
+        this.paymentsPage = new PaymentsPage(Hooks.getDriver());
+    }
 
     @Given("login and access payments page")
     public void login_and_access_payments_page() {
-        driver.get("https://monetis-delta.vercel.app/login");
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        if (!driver.getCurrentUrl().contains("dashboard")) {
-            driver.findElement(By.name("email")).sendKeys("john@email.com");
-            driver.findElement(By.name("password")).sendKeys("atec123-");
-            driver.findElement(By.xpath("//button[@type='submit']")).click();
-            wait.until(ExpectedConditions.urlContains("dashboard"));
+        loginPage.accessPage(TestConfig.LOGIN_URL);
+        if (!Hooks.getDriver().getCurrentUrl().contains("dashboard")) {
+            loginPage.login(TestConfig.TEST_USER_EMAIL, TestConfig.TEST_USER_PASSWORD);
         }
         paymentsPage.goToPaymentsSection();
     }
@@ -58,11 +55,6 @@ public class PaymentsSteps {
         paymentsPage.fillReference(paymentData.get("REFERENCE"));
         paymentsPage.fillCategory(paymentData.get("CATEGORY"));
         paymentsPage.setFillAmount(paymentData.get("AMOUNT"));
-        try {
-            Thread.sleep(2000);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-        }
     }
 
     @When("I access the payments transactions page")

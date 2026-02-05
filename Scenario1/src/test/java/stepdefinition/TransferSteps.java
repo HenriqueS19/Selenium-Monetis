@@ -2,29 +2,24 @@ package stepdefinition;
 
 import io.cucumber.java.en.*;
 import hooks.Hooks;
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
-import pages.AccountsPage;
-import pages.LoginPage;
-import org.junit.Assert;
 import pages.TransferPage;
-import java.time.Duration;
+import pages.LoginPage;
+import config.TestConfig;
 
 public class TransferSteps {
-    WebDriver driver = Hooks.getDriver();
-    TransferPage transferPage = new TransferPage(driver);
-    AccountsPage accountsPage = new AccountsPage(driver);
+
+    private LoginPage loginPage;
+    private TransferPage transferPage;
+
+    public TransferSteps() {
+        this.loginPage = new LoginPage(Hooks.getDriver());
+        this.transferPage = new TransferPage(Hooks.getDriver());
+    }
 
     @Given("login and access transfer page")
     public void login_and_access_transfer_page() {
-        driver.get("https://monetis-delta.vercel.app/login");
-        driver.findElement(By.name("email")).sendKeys("john@email.com");
-        driver.findElement(By.name("password")).sendKeys("atec123-");
-        driver.findElement(By.xpath("//button[@type='submit']")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        wait.until(ExpectedConditions.urlContains("dashboard"));
+        loginPage.accessPage(TestConfig.LOGIN_URL);
+        loginPage.login(TestConfig.TEST_USER_EMAIL, TestConfig.TEST_USER_PASSWORD);
         transferPage.goToAccountsSectionFromDashboard();
     }
 
@@ -41,7 +36,7 @@ public class TransferSteps {
     }
 
     @When("I fill in transfer form with {string} account, {int} amount and proceed")
-    public void i_fill_transfer_amount(String account,int amount) {
+    public void i_fill_transfer_amount(String account, int amount) {
         transferPage.selectSavingsAccount(account);
         transferPage.fillTransferAmount(String.valueOf(amount));
         transferPage.clickNextButton();
@@ -59,13 +54,11 @@ public class TransferSteps {
 
     @Then("Verify success transfer page appears")
     public void verify_success_transfer_page_appears() {
-
         transferPage.verifySuccessAndClose();
-
     }
 
     @When("I access accounts page")
-    public void i_access_accounts_page(){
+    public void i_access_accounts_page() {
         transferPage.goToAccountsSectionFromTransfer();
     }
 

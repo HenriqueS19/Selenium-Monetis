@@ -6,13 +6,11 @@ import io.cucumber.java.BeforeAll;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import io.restassured.RestAssured;
 import io.restassured.config.SSLConfig;
-import org.hamcrest.Matcher;
-import org.hamcrest.Matchers;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import utils.ApiUtils;
-
+import config.TestConfig;
 import java.time.Duration;
 
 public class Hooks {
@@ -38,7 +36,7 @@ public class Hooks {
         options.addArguments("--start-maximized"); // browser in full screen
         options.addArguments("--remote-allow-origins=*"); // Prevents some common connection errors
         driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(5));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(TestConfig.SHORT_TIMEOUT));
     }
 
     @After
