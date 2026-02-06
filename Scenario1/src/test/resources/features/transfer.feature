@@ -1,3 +1,4 @@
+@regression
 Feature: Transfer
   Scenario: Transfer
     Given login and access transfer page

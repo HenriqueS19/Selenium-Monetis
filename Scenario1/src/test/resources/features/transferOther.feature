@@ -1,3 +1,4 @@
+@regression
 Feature: Transfer to Other Account
   Scenario Outline: Make a transfer to other account
     Given login and access transfer page for other account

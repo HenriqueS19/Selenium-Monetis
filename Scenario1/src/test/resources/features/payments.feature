@@ -1,3 +1,4 @@
+@regression
 Feature: Make multiple payments
   Scenario Outline: Make multiple payments
     Given login and access payments page

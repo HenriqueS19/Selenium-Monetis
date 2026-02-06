@@ -1,3 +1,4 @@
+@smoke
 Feature: User Login
 
    Scenario: User Login
