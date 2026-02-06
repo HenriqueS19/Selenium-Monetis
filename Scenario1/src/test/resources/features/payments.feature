@@ -1,5 +1,5 @@
 @regression
-Feature: Make multiple payments
+Feature: Make multiple payments Test
   Scenario Outline: Make multiple payments
     Given login and access payments page
     When I make a payment with the following data

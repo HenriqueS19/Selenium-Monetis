@@ -1,5 +1,5 @@
 @regression
-Feature: Transfer
+Feature: Transfer Test
   Scenario: Transfer
     Given login and access transfer page
     And I capture initial balance of "savings" account

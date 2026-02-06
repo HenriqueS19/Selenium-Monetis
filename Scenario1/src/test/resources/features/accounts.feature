@@ -1,5 +1,5 @@
 @regression
-Feature: Create Account
+Feature: Create Account Test
 
   Scenario: Create Account
     Given I add money to my account

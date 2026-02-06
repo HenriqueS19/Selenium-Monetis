@@ -1,5 +1,5 @@
 @smoke
-Feature: User Login
+Feature: User Login Test
 
    Scenario: User Login
      Given access the login page "https://monetis-delta.vercel.app/login"

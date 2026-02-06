@@ -1,5 +1,5 @@
 @regression
-Feature: Transfer to Other Account
+Feature: Transfer to Other Account Test
   Scenario Outline: Make a transfer to other account
     Given login and access transfer page for other account
     When I select transfer to other account
